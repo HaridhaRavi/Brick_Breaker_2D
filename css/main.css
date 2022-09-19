@@ -1,0 +1,32 @@
+.outer-grid{
+    position:absolute;
+    width : 50vw;
+    height: 80vh;
+    border: 5px solid black; 
+    left:25vw;
+    bottom:5vh;   
+}
+.block{
+    width:10vw;
+    height:4vh;
+    position:absolute;
+    background-color: red;
+    border-radius:20px;
+}
+.paddle{
+    width:12vw;
+    height:4vh;
+    position:absolute;
+    background-color: black;
+    border-radius:20px;
+    
+}
+
+.ball{
+    position:absolute;
+    width:4%;
+    height:4%;
+    border-radius: 50%;
+    background-color: blue;
+
+}
