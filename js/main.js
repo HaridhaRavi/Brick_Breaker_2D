@@ -2,6 +2,9 @@
 const outerGrid = document.querySelector('.outer-grid');
 
 const scoreDisplay = document.querySelector('#score');
+console.log(scoreDisplay)
+
+const livesDisplay = document.getElementById('lives');
 
 //Global variables and constants
 const blockWidth = 10;
@@ -13,6 +16,9 @@ let ballXDirection = 1;
 let ballYDirection = 1;
 let intervalId;
 let score =0;
+let lives = 3;
+
+
 
 
 const userStart = [18,1]
@@ -20,6 +26,12 @@ let PaddleCrntPosition = userStart;
 
 const ballStart =[23,5];
 let ballCurrentPosition = ballStart;
+
+scoreDisplay.innerHTML = "🏆Score: " + score;
+
+livesDisplay.innerHTML = "💖Lives: " + lives;
+
+//create live dom element
 
 
 class Block{
@@ -31,7 +43,7 @@ class Block{
     }
 }    
 
-// xAxis - positionx+width; yAxis -postionY +height;
+// xAxis - positionx + width; yAxis -postionY +height;
 const blocks = [
     new Block(0,75),
     new Block(10,75),
@@ -138,9 +150,9 @@ function checkForCollisions(){
             blocks.splice(i,1);
             changeBallDirection()
             score++
-            scoreDisplay.innerHTML = score;
+            scoreDisplay.innerHTML = "🏆Score:" + score;
             if (blocks.length === 0) {
-                scoreDisplay.innerHTML = 'You Win!'
+                //scoreDisplay.innerHTML = 'You Win!'
                 clearInterval(timerId)
                 document.removeEventListener('keydown', movePaddle)
             }
@@ -164,15 +176,28 @@ function checkForCollisions(){
         changeBallDirection();
     }
     if(ballCurrentPosition[1] <=0){
-        clearInterval(intervalId);
-        console.log("Game Over")
-        scoreDisplay.innerHTML = "you lose";
-        document.removeEventListener('keydown',movePaddle)
+        if(lives > 0){
+            lives -= 1;
+            PaddleCrntPosition[0] = 18;
+            PaddleCrntPosition[1] = 1;
+            drawPaddle();
+            ballCurrentPosition[0] = 23;
+            ballCurrentPosition[1] = 5
+            drawBall();
+            livesDisplay.innerHTML = "💖Lives: " + lives;
+            if(lives === 0){
+                livesDisplay.innerHTML = " 💔Lives: " + lives;
+            }
+            
+        }else{
+            clearInterval(intervalId);
+            console.log("Game Over")
+            //scoreDisplay.innerHTML = "you lose";
+            document.removeEventListener('keydown',movePaddle)
+
+        }
     }
 }
-
-
- 
 
 function changeBallDirection(){
     if(ballXDirection === 1 && ballYDirection === 1){

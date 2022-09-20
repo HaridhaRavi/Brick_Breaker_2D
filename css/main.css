@@ -4,7 +4,7 @@
     height: 80vh;
     border: 5px solid black; 
     left:25vw;
-    bottom:5vh;   
+    bottom:5vh;
 }
 .block{
     width:10vw;
@@ -29,4 +29,20 @@
     border-radius: 50%;
     background-color: blue;
 
+}
+
+#score{
+    position: absolute;
+    left:25vw;
+    top:6vh;
+    font-weight: bolder;
+    font-size: xx-large;
+}
+
+#lives{
+    position: absolute;
+    top:6vh;
+    left:66vw;
+    font-weight: bolder;
+    font-size: xx-large;
 }
