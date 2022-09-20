@@ -17,6 +17,8 @@ let ballYDirection = 1;
 let intervalId;
 let score =0;
 let lives = 3;
+let blockHitCount = 2;
+
 
 
 
@@ -146,14 +148,31 @@ function checkForCollisions(){
           ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1]) 
         ){
             let allBlocks = [...document.querySelectorAll('.block')];
-            allBlocks[i].classList.remove('block');
-            blocks.splice(i,1);
-            changeBallDirection()
-            score++
-            scoreDisplay.innerHTML = "🏆Score:" + score;
+            console.log("blocks "+blocks)
+
+            if(blocks[i].bottomLeft[1] > 70){
+                allBlocks[i].style.backgroundColor = "dimgray";
+                blockHitCount--;
+                //score ++;
+                scoreDisplay.innerHTML = "🏆Score:" + score;
+                if(blockHitCount === 0){
+                    allBlocks[i].classList.remove('block');
+                    blocks.splice(i,1);
+                    changeBallDirection()
+                    score+= 2;   
+                    blockHitCount = 2;
+                    scoreDisplay.innerHTML = "🏆Score:" + score;
+                }
+            }else{
+                allBlocks[i].classList.remove('block');
+                blocks.splice(i,1);
+                changeBallDirection()
+                score++
+                scoreDisplay.innerHTML = "🏆Score:" + score;
+            }
             if (blocks.length === 0) {
                 //scoreDisplay.innerHTML = 'You Win!'
-                clearInterval(timerId)
+                clearInterval(intervalId)
                 document.removeEventListener('keydown', movePaddle)
             }
 
@@ -175,7 +194,7 @@ function checkForCollisions(){
     (ballCurrentPosition[0] <= 0)) {
         changeBallDirection();
     }
-    if(ballCurrentPosition[1] <=0){
+    if(ballCurrentPosition[1] < 0){
         if(lives > 0){
             lives -= 1;
             PaddleCrntPosition[0] = 18;
