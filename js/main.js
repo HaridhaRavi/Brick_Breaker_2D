@@ -1,6 +1,7 @@
 //creating dom elemnts
 const outerGrid = document.querySelector('.outer-grid');
 
+const scoreDisplay = document.querySelector('#score');
 
 //Global variables and constants
 const blockWidth = 10;
@@ -11,6 +12,9 @@ const outerGridHeight = 80;
 let ballXDirection = 1;
 let ballYDirection = 1;
 let intervalId;
+let score =0;
+
+
 const userStart = [18,1]
 let PaddleCrntPosition = userStart;
 
@@ -79,14 +83,14 @@ function movePaddle(e) {
     switch (e.key) {
       case 'ArrowLeft':
         if(PaddleCrntPosition[0] > 0){
-            PaddleCrntPosition[0] -= 1;
+            PaddleCrntPosition[0] -= 2;
             console.log(PaddleCrntPosition[0] > 0)
             drawPaddle();   
         }
         break;
       case 'ArrowRight':
         if(PaddleCrntPosition[0] < 48 - blockWidth){
-            PaddleCrntPosition[0] += 1;
+            PaddleCrntPosition[0] += 2;
             console.log(PaddleCrntPosition[0] > 0)
             drawPaddle();   
         }
@@ -115,18 +119,44 @@ function moveBall(){
     checkForCollisions();
 }
 
-intervalId = setInterval(moveBall,100);
+intervalId = setInterval(moveBall,80);
 
 
 //collisions check
 
 function checkForCollisions(){
 
-    //chcek block collision
+    //check block collision
     for(let i=0;i<blocks.length;i++){
+        if
+        (
+          (ballCurrentPosition[0] > blocks[i].bottomLeft[0] && ballCurrentPosition[0] < blocks[i].bottomRight[0]) &&
+          ((ballCurrentPosition[1] + ballDiameter) > blocks[i].bottomLeft[1] && ballCurrentPosition[1] < blocks[i].topLeft[1]) 
+        ){
+            let allBlocks = [...document.querySelectorAll('.block')];
+            allBlocks[i].classList.remove('block');
+            blocks.splice(i,1);
+            changeBallDirection()
+            score++
+            scoreDisplay.innerHTML = score;
+            if (blocks.length === 0) {
+                scoreDisplay.innerHTML = 'You Win!'
+                clearInterval(timerId)
+                document.removeEventListener('keydown', movePaddle)
+            }
+
+        }
 
     }
 
+    // paddle collision
+    if
+    (
+    (ballCurrentPosition[0] > PaddleCrntPosition[0] && ballCurrentPosition[0] < PaddleCrntPosition[0] + blockWidth) &&
+    (ballCurrentPosition[1] > PaddleCrntPosition[1] && ballCurrentPosition[1] < PaddleCrntPosition[1] + blockHeight ) 
+    ){
+         changeBallDirection();
+    }
 
     if((ballCurrentPosition[0] >= outerGridWidth - ballDiameter) ||
     (ballCurrentPosition[1] >= outerGridHeight - ballDiameter) || 
@@ -142,6 +172,7 @@ function checkForCollisions(){
 }
 
 
+ 
 
 function changeBallDirection(){
     if(ballXDirection === 1 && ballYDirection === 1){
