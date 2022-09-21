@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+#bg-image {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+#start {
+  position: absolute;
+  border-radius: 15px;
+  height: 7vh;
+  width: 14vw;
+  left: 40vw;
+  text-align: center;
+  top: 70vh;
+  font-size: x-large;
+  font-weight: bolder;
+  color: white;
+  background-color: rgba(6, 67, 128, 0.267);
+  border: 3px solid purple;
+}
+#about {
+  position: absolute;
+  border-radius: 15px;
+  height: 7vh;
+  width: 14vw;
+  font-size: x-large;
+  font-weight: bolder;
+  color: white;
+  background-color: rgba(6, 67, 128, 0.267);
+  top: 80vh;
+  left: 40vw;
+  border: 3px solid purple;
+}
+
+#instruction {
+  position: absolute;
+  width: 40vw;
+  height: 26vh;
+  left: 25vw;
+  top: 5vh;
+  padding: 20px;
+  text-align: center;
+  font-size: medium;
+  line-height: 4vh;
+  color: white;
+  border: 3px solid purple;
+}
