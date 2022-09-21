@@ -235,7 +235,7 @@ function checkForCollisions() {
       clearInterval(intervalId);
       console.log("Game Over");
       //displayWinStatus(LOST_STATUS);
-      location.href = "../end_page.html";
+      location.href = "../end.html";
       document.removeEventListener("keydown", movePaddle);
     }
   }
