@@ -15,7 +15,7 @@ function displayWinStatus() {
 
   const winImage = document.createElement("img");
   winImage.setAttribute("id", "win-img");
-  winImage.setAttribute("src", "../images/win-image.jfif");
+  winImage.setAttribute("src", "./images/win-image.jpg");
   statusElm.appendChild(winImage);
 
   //parent
@@ -36,7 +36,7 @@ let ballXDirection = 1;
 let ballYDirection = 1;
 let intervalId;
 let score = 0;
-let lives = 3;
+let lives = 2;
 let blockHitCount = 2;
 
 const userStart = [18, 1];
