@@ -2,29 +2,25 @@
 const outerGrid = document.querySelector(".outer-grid");
 
 const scoreDisplay = document.querySelector("#score");
-console.log(scoreDisplay);
 
 const livesDisplay = document.getElementById("lives");
-
 
 //To display end game status win/lose
 function displayWinStatus() {
   const statusElm = document.createElement("div");
   statusElm.setAttribute("id", "status");
-  //statusElm.innerHTML = status;
+  
 
   const winImage = document.createElement("img");
   winImage.setAttribute("id", "win-img");
   winImage.setAttribute("src", "./images/win-image.jpg");
   statusElm.appendChild(winImage);
 
-  //parent
+  //parent Element
   const parentElm = document.querySelector("body");
-  console.log(parentElm);
+
   parentElm.appendChild(statusElm);
 }
-
-
 
 //Global variables and constants
 const blockWidth = 10;
@@ -32,12 +28,16 @@ const blockHeight = 4;
 const ballDiameter = 4;
 const outerGridWidth = 52;
 const outerGridHeight = 78;
+const rewardWidth = 20;
+const rewardHeight = 20;
+let rewardIntervalId = 0;
 let ballXDirection = 1;
 let ballYDirection = 1;
 let intervalId;
 let score = 0;
 let lives = 2;
 let blockHitCount = 2;
+let reward = 0;
 
 const userStart = [18, 1];
 let PaddleCrntPosition = userStart;
@@ -49,9 +49,7 @@ scoreDisplay.innerHTML = "🏆Score: " + score;
 
 livesDisplay.innerHTML = "💖Lives: " + lives;
 
-
-
-//create rows of blocks with axis
+//create rows of blocks with reference to axis
 class Block {
   constructor(xAxis, yAxis) {
     this.bottomLeft = [xAxis, yAxis];
@@ -61,7 +59,7 @@ class Block {
   }
 }
 
-// create instance to create blocks
+// Blocks instance  and creation
 const blocks = [
   new Block(0, 75),
   new Block(10, 75),
@@ -79,7 +77,6 @@ const blocks = [
   new Block(30, 65),
   new Block(40, 65),
 ];
-
 
 function createBlock() {
   for (let i = 0; i < blocks.length; i++) {
@@ -101,7 +98,6 @@ function createBlock() {
 }
 createBlock();
 
-
 // create Paddle
 const paddle = document.createElement("div");
 paddle.classList.add("paddle");
@@ -113,21 +109,19 @@ function drawPaddle() {
   paddle.style.bottom = PaddleCrntPosition[1] + "vh";
 }
 
-//Implement event Listners to the padddle
+//Event Listners to the padddle
 document.addEventListener("keydown", movePaddle);
 function movePaddle(e) {
   switch (e.key) {
     case "ArrowLeft":
       if (PaddleCrntPosition[0] > 0) {
         PaddleCrntPosition[0] -= 2;
-        console.log(PaddleCrntPosition[0] > 0);
         drawPaddle();
       }
       break;
     case "ArrowRight":
       if (PaddleCrntPosition[0] < 48 - blockWidth) {
         PaddleCrntPosition[0] += 2;
-        console.log(PaddleCrntPosition[0] > 0);
         drawPaddle();
       }
       break;
@@ -153,12 +147,13 @@ function moveBall() {
   checkForCollisions();
 }
 
+//time intervall to move the ball
 intervalId = setInterval(moveBall, 60);
 
-//collisions check
 
+//Check for the collisions
 function checkForCollisions() {
-  //check block collision
+  //Blocks collision
   for (let i = 0; i < blocks.length; i++) {
     if (
       ballCurrentPosition[0] > blocks[i].bottomLeft[0] &&
@@ -167,22 +162,30 @@ function checkForCollisions() {
       ballCurrentPosition[1] < blocks[i].topLeft[1]
     ) {
       let allBlocks = [...document.querySelectorAll(".block")];
-      console.log("blocks " + blocks);
 
-      if (blocks[i].bottomLeft[1] > 70) {
+      if (blocks[i].bottomLeft[1] === 75) {
         allBlocks[i].style.backgroundColor = "crimson";
         score++;
         changeBallDirection();
         blockHitCount--;
-
-        //score ++;
         scoreDisplay.innerHTML = "🏆Score:" + score;
         if (blockHitCount === 0) {
+          blockHitCount = 2;
           allBlocks[i].classList.remove("block");
+          if (blocks[i].bottomLeft[0] === 0 || blocks[i].bottomLeft[0] === 40) {
+            reward = new Rewards(
+              blocks[i].bottomLeft[0] + 2,
+              blocks[i].bottomLeft[1]
+            );
+            rewardIntervalId = setInterval(function () {
+              reward.moveDown();
+            }, 100);
+          }
+
           blocks.splice(i, 1);
           changeBallDirection();
           score += 2;
-          blockHitCount = 2;
+
           scoreDisplay.innerHTML = "🏆Score:" + score;
         }
       } else {
@@ -195,13 +198,13 @@ function checkForCollisions() {
       }
       if (blocks.length === 0) {
         clearInterval(intervalId);
-        displayWinStatus();
         document.removeEventListener("keydown", movePaddle);
+        displayWinStatus();
       }
     }
   }
 
-  // paddle collision
+  // Ball-paddle collision
   if (
     ballCurrentPosition[0] > PaddleCrntPosition[0] &&
     ballCurrentPosition[0] < PaddleCrntPosition[0] + blockWidth &&
@@ -218,6 +221,14 @@ function checkForCollisions() {
   ) {
     changeBallDirection();
   }
+
+  //reward -paddle collision
+  if (reward.positionY === PaddleCrntPosition[1] + blockHeight) {
+    removerewardIfOutside();
+    score += 10;
+    scoreDisplay.innerHTML = "🏆Score:" + score;
+  }
+
   if (ballCurrentPosition[1] < 0) {
     if (lives > 0) {
       lives -= 1;
@@ -233,14 +244,13 @@ function checkForCollisions() {
       }
     } else {
       clearInterval(intervalId);
-      console.log("Game Over");
-      //displayWinStatus(LOST_STATUS);
       location.href = "./end.html";
       document.removeEventListener("keydown", movePaddle);
     }
   }
 }
 
+//To change Ball Direction when collides
 function changeBallDirection() {
   if (ballXDirection === 1 && ballYDirection === 1) {
     ballXDirection = -1;
@@ -260,5 +270,37 @@ function changeBallDirection() {
   }
 }
 
+//To create Reward
+class Rewards {
+  constructor(positionX, positionY) {
+    this.width = 20;
+    this.height = 20;
+    this.positionX = positionX;
+    this.positionY = positionY;
+    this.domElement = null;
+    this.createDomElement();
+  }
 
+  //Creating a div and append it in dom
+  createDomElement() {
+    this.domElement = document.createElement("div");
+    this.domElement.className = "reward";
+    this.domElement.style.bottom = this.positionY + "vh";
+    this.domElement.style.left = this.positionX + "vw";
+    outerGrid.appendChild(this.domElement);
+  }
+  //To move the reward
+  moveDown() {
+    this.positionY -= 1;
+    this.domElement.style.bottom = this.positionY + "vh";
+    removerewardIfOutside();
+  }
+}
 
+//To remove reward if moves outer the grid
+function removerewardIfOutside() {
+  if (reward.positionY < 4 || reward.positionY <= 0) {
+    reward.domElement.remove();
+    clearInterval(rewardIntervalId);
+  }
+}
